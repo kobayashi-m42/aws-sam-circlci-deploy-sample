@@ -1,3 +1,4 @@
 .idea
 aws-sam-circleci-deploy-sample.iml
 .aws-sam
+packaged.yaml
