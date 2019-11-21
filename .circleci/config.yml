@@ -1,0 +1,55 @@
+deploy_template: &deploy_template
+  machine: true
+  working_directory: ~/project/app
+  steps:
+    - checkout
+    - run:
+        name: install python 3.6.0
+        command: |
+          pyenv install 3.6.0
+          pyenv global 3.6.0
+    - run:
+        name: sam-build
+        command: |
+          pip install pipenv
+          python -m venv venv
+          source venv/bin/activate
+
+          pipenv install
+
+          make build
+    - run:
+        name: deploy AWS Key
+        command: |
+          source venv/bin/activate
+
+          make package
+          make deploy
+
+version: 2.1
+
+jobs:
+  deploy-dev:
+    <<: *deploy_template
+    environment:
+      DEPLOY_ENV: dev
+  deploy-prd:
+    <<: *deploy_template
+    environment:
+      DEPLOY_ENV: prd
+
+workflows:
+  version: 2.1
+  aws-sam-deploy:
+    jobs:
+      - deploy-dev:
+          context: aws-dev
+          filters:
+            branches:
+              only:
+                - /develop/
+      - deploy-prd:
+          context: aws-prd
+          filters:
+            branches:
+              only: /master/
