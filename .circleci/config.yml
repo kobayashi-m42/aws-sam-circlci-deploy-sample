@@ -31,12 +31,8 @@ version: 2.1
 jobs:
   deploy-dev:
     <<: *deploy_template
-    environment:
-      DEPLOY_ENV: dev
   deploy-prd:
     <<: *deploy_template
-    environment:
-      DEPLOY_ENV: prd
 
 workflows:
   version: 2.1
